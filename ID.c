@@ -80,10 +80,19 @@ ID2EX ID_S(IF2ID inst) {
     ID2EX ret;
 
     ret.next_pc = inst.pc + 4;
+
     ret.is_jmp = 0;
     ret.is_branch = 0;
     ret.is_mem = 1;
+
     ret.alu_op = OP_ADD;
+
+    switch (ret.inst_raw_split.s.funct3) {
+        case 0: ret.mem_op = MEM_SB; break;
+        case 1: ret.mem_op = MEM_SH; break;
+        case 2: ret.mem_op = MEM_SW; break;
+        default: ret.mem_op = MEM_SW; break;
+    }
 
     return ret;
 }
