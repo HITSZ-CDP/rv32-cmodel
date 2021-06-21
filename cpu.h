@@ -23,7 +23,7 @@ typedef struct {
 
 typedef enum { OP_ADD, OP_SLT, OP_SLTU, OP_AND, OP_OR, OP_XOR, OP_SLL, OP_SRL, OP_SUB, OP_SRA, OP_INVALID } alu_op;
 typedef enum { MEM_LB, MEM_LBU, MEM_LH, MEM_LHU, MEM_LW, MEM_SB, MEM_SH, MEM_SW } mem_op;
-typedef enum { BR_EQ, BR_NEQ, BR_GE, BR_GEU, BR_LT, BR_LTU, JUMP } br_op;
+typedef enum { BR_EQ, BR_NEQ, BR_GE, BR_GEU, BR_LT, BR_LTU, BR_JUMP, BR_JUMPREG } br_op;
 
 #include "riscv32_instdef.h"
 typedef struct {
@@ -36,6 +36,8 @@ typedef struct {
     uint32_t is_branch;
     uint32_t is_mem;
     Operand src1, src2;
+    uint32_t store_val;
+    uint32_t target_pc;
     uint32_t dst;
     uint32_t wb_en;
 } ID2EX;
