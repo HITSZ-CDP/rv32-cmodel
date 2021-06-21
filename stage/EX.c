@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "cpu.h"
+#include "../include/cpu.h"
 extern struct riscv32_CPU_state cpu;
 
 EX2MEM EX(ID2EX decode_info) {

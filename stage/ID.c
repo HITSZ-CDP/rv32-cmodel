@@ -1,5 +1,5 @@
-#include "cpu.h"
-#include "bin.h"
+#include "../include/cpu.h"
+#include "../include/bin.h"
 #define pair(x, y) (((x) << 3) | (y))
 #define PAIR_ENTRY(x, y, OP) case pair(x,y): ret.alu_op = OP; break
 extern riscv32_CPU_state cpu;
