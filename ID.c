@@ -9,6 +9,8 @@ ID2EX ID_R(IF2ID inst) {
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
     ret.next_pc = inst.pc + 4;
+    ret.pc = inst.pc;
+    ret.inst = inst.inst;
 
     switch (pair(ret.inst_raw_split.r.funct7, ret.inst_raw_split.r.funct3)) {
         PAIR_ENTRY(0, 0, OP_ADD);

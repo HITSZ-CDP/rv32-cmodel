@@ -24,6 +24,7 @@ typedef struct {
 typedef enum { OP_ADD, OP_SLT, OP_SLTU, OP_AND, OP_OR, OP_XOR, OP_SLL, OP_SRL, OP_SUB, OP_SRA, OP_INVALID } alu_op;
 typedef enum { MEM_LB, MEM_LBU, MEM_LH, MEM_LHU, MEM_LW, MEM_SB, MEM_SH, MEM_SW } mem_op;
 typedef enum { BR_EQ, BR_NEQ, BR_GE, BR_GEU, BR_LT, BR_LTU, BR_JUMP, BR_JUMPREG } br_op;
+typedef enum { WB_ALU, WB_PC, WB_LOAD } wb_sel;
 
 #include "riscv32_instdef.h"
 typedef struct {
@@ -31,15 +32,42 @@ typedef struct {
     alu_op alu_op;
     mem_op mem_op;
     br_op  br_op;
+    wb_sel wb_sel;   // TODO
     uint32_t next_pc;
     uint32_t is_jmp;
     uint32_t is_branch;
     uint32_t is_mem;
     Operand src1, src2;
     uint32_t store_val;
-    uint32_t target_pc;
     uint32_t dst;
     uint32_t wb_en;
+    uint32_t inst;
+    uint32_t pc;
 } ID2EX;
+
+typedef struct {
+    uint32_t alu_out;
+    uint32_t store_val;
+    mem_op mem_op;
+    wb_sel wb_sel;
+    uint32_t wb_en;
+    uint32_t dst;
+    uint32_t branch_taken;
+    uint32_t target_pc;
+    uint32_t inst;
+    uint32_t pc;
+} EX2MEM;
+
+typedef struct {
+    uint32_t alu_out;
+    uint32_t load_out;
+    wb_sel wb_sel;
+    uint32_t wb_en;
+    uint32_t dst;
+    uint32_t branch_taken;
+    uint32_t target_pc;
+    uint32_t inst;
+    uint32_t pc;
+} MEM2WB;
 
 #endif
