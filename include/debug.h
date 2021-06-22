@@ -8,6 +8,10 @@
     printf("\33[1;34m[%s,%d,%s] " format "\33[0m\n", \
         __FILE__, __LINE__, __func__, ## __VA_ARGS__)
 
+#define color_print(format, ...) \
+    printf("\33[1;34m" format "\33[0m", \
+        ## __VA_ARGS__)
+
 #define Assert(cond, ...) \
   do { \
     if (!(cond)) { \

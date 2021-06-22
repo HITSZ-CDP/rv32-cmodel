@@ -8,5 +8,6 @@ IF2ID IF(uint32_t pc) {
     Assert(pc < MEM_SZ, "PC out of boundary!\n");
     ret.inst = memory[pc >> 2];
     ret.pc = pc;
+    Log("Fetched instruction 0x%8.8x at PC=0x%8.8x", ret.inst, ret.pc);
     return ret;
 }

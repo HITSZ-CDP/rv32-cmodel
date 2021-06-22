@@ -19,18 +19,21 @@ EX2MEM EX(ID2EX decode_info) {
     uint32_t src1 = decode_info.src1.value;
     uint32_t src2 = decode_info.src2.value;
     switch(decode_info.alu_op) {
-        case OP_ADD: alu_result = src1 + src2;
+        case OP_INVALID: 
+            panic("Invalid Insturction %8.8x at PC=%8.8x\n", decode_info.inst, decode_info.pc); break;
+        case OP_ADD: alu_result = src1 + src2; break;
         // TODO
         default: alu_result = 0;
     }
     ret.alu_out = alu_result;
+    Log("ALU Result = %8.8x\n", alu_result);
 
     uint32_t br_cond = 0;
     if(decode_info.is_branch) {
         switch(decode_info.br_op) {
-            case BR_EQ: br_cond = (src1 == src2);
+            case BR_EQ: br_cond = (src1 == src2); break;
                         // TODO
-            default: br_cond = 0;
+            default: br_cond = 0; break;
         }
     } else if (decode_info.is_jmp) {
         br_cond = 1;

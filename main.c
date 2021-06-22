@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "include/cpu.h"
+#include "include/debug.h"
 riscv32_CPU_state cpu;
 uint32_t memory[1024];
 extern IF2ID IF(uint32_t);
@@ -14,10 +15,21 @@ int cpu_run_once() {
     MEM2WB mem_info = MEM(ex_info);
     return WB(mem_info);
 }
+void print_reg_state(){
+    color_print("======= REG VALUE =======\n");
+    color_print("x[ 0] = 0x00000000\t");
+    for(int i = 1; i < 32; i++) {
+        if( (i % 4) == 0 ) printf("\n");
+        color_print("x[%2d] = %8.8x\t", i, cpu.gpr[i]);
+    }
+    printf("\n");
+}
 int main(void){
+    memory[0] = 0x00300093;
     Log("CPU Started\n");
     int state = 0;
-    while((state = cpu_run_once()) == 0) {
-
-    }
+    cpu.pc = 0;
+    cpu_run_once();
+    print_reg_state();
+    return 0;
 }

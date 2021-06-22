@@ -37,6 +37,7 @@ ID2EX ID_R(IF2ID inst) {
     ret.src2.value = cpu.gpr[ret.inst_raw_split.r.rs2];
     
     ret.dst = ret.inst_raw_split.r.rd;
+    ret.wb_sel = WB_ALU;
     ret.wb_en = 1;
 
     return ret;
@@ -46,6 +47,7 @@ ID2EX ID_I_LOAD(IF2ID inst) {
     // LOAD
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
+    ret.alu_op = OP_ADD;
     switch (ret.inst_raw_split.i.funct3) {
         case 0: ret.mem_op = MEM_LB; break;
         case 1: ret.mem_op = MEM_LH; break;
@@ -68,6 +70,7 @@ ID2EX ID_I_LOAD(IF2ID inst) {
     ret.src2.value = ret.inst_raw_split.i.simm11_0;
     
     ret.dst = ret.inst_raw_split.r.rd;
+    ret.wb_sel = WB_LOAD;
     ret.wb_en = 1;
 
     return ret;
@@ -91,6 +94,7 @@ ID2EX ID_I(IF2ID inst) {
                 else ret.alu_op = OP_SRA;
                 break;
         case 6: ret.alu_op = OP_AND; break;
+        default: ret.alu_op = OP_INVALID; break;
     }
 
     ret.is_jmp = 0;
@@ -104,6 +108,7 @@ ID2EX ID_I(IF2ID inst) {
     ret.src2.value = ret.inst_raw_split.i.simm11_0;
     
     ret.dst = ret.inst_raw_split.r.rd;
+    ret.wb_sel = WB_ALU;
     ret.wb_en = 1;
 
     return ret;
@@ -152,6 +157,8 @@ ID2EX ID_B(IF2ID inst) {
     ret.is_branch = 1;
     ret.is_mem = 0;
 
+    ret.alu_op = OP_ADD;
+
     switch(ret.inst_raw_split.b.funct3) {
         case 0: ret.br_op = BR_EQ; break;
         case 1: ret.br_op = BR_NEQ ; break;
@@ -183,16 +190,17 @@ ID2EX ID_U(IF2ID inst) {
     ret.is_branch = 0;
     ret.is_mem = 0;
 
+    ret.alu_op = OP_ADD;
+
     if(ret.inst_raw_split.u.opcode6_2 == 6) {
         ret.src1.value = 0;
     } else {
         ret.src1.value = inst.pc;
     }
-
     ret.src2.value = ret.inst_raw_split.u.imm31_12; // TODO: Shift the imm
-    ret.alu_op = OP_ADD;
     
     ret.dst = ret.inst_raw_split.u.rd;
+    ret.wb_sel = WB_ALU;
     ret.wb_en = 1;
 
     return ret;
@@ -207,6 +215,8 @@ ID2EX ID_J(IF2ID inst) {
     ret.is_branch = 0;
     ret.is_mem = 0;
 
+    ret.alu_op = OP_ADD;
+
     if(ret.inst_raw_split.j.opcode6_2 == 13) {  // JAL 
         ret.next_pc = inst.pc + 0; // TODO: Make the imm
     } else {
@@ -214,6 +224,7 @@ ID2EX ID_J(IF2ID inst) {
     }
 
     ret.dst = ret.inst_raw_split.j.rd;
+    ret.wb_sel = WB_PC;
     ret.wb_en = 1;
 
     return ret;
@@ -222,7 +233,10 @@ ID2EX ID_J(IF2ID inst) {
 ID2EX ID(IF2ID inst) {
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
-    switch( ((ret.inst_raw_split.r.opcode6_2) << 3) | (ret.inst_raw_split.r.opcode1_0) ) { // funct7
+    ret.pc = inst.pc;
+    ret.inst = inst.inst;
+    Log("OpCode is %8.8x\n",  ((ret.inst_raw_split.r.opcode6_2) << 2) | (ret.inst_raw_split.r.opcode1_0) );
+    switch( ((ret.inst_raw_split.r.opcode6_2) << 2) | (ret.inst_raw_split.r.opcode1_0) ) { // funct7
         case B8(00110111):
         case B8(00010111):
             ret = ID_U(inst);
@@ -242,6 +256,7 @@ ID2EX ID(IF2ID inst) {
             break;
         case B8(00010011):
             ret = ID_I(inst);
+            Log("I Type\n");
             break;
         case B8(00110011):
             ret = ID_R(inst);

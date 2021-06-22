@@ -16,14 +16,14 @@ int WB(MEM2WB mem_info) {
     }
     cpu.gpr[0] = 0;
     // TODO: if ecall, return 1;
-    /* Log("========WB Stage=======\n"); */
-    /* Log("PC = %8.8x\n", mem_info.pc); */
-    /* if(mem_info.wb_en) { */
-    /*     Log("WB value = %8.8x, WReg = %d\n", wb_val, mem_info.dst); */
-    /* } */
-    /* if(mem_info.branch_taken) { */
-    /*     Log("Branch Taken, target is %8.8x\n", mem_info.target_pc); */
-    /* } */
+    Log("========WB Stage=======\n");
+    Log("PC = %8.8x\n", mem_info.pc);
+    if(mem_info.wb_en) {
+        Log("WB value = %8.8x, WReg = %d\n", wb_val, mem_info.dst);
+    }
+    if(mem_info.branch_taken) {
+        Log("Branch Taken, target is %8.8x\n", mem_info.target_pc);
+    }
 
     return 0;
 }
