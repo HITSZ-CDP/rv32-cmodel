@@ -24,7 +24,7 @@ typedef struct {
     uint32_t value;
 } Operand;
 
-typedef enum { OP_ADD, OP_SLT, OP_SLTU, OP_AND, OP_OR, OP_XOR, OP_SLL, OP_SRL, OP_SUB, OP_SRA, OP_INVALID } alu_op;
+typedef enum { OP_ADD, OP_SLT, OP_SLTU, OP_AND, OP_OR, OP_XOR, OP_SLL, OP_SRL, OP_SUB, OP_SRA, OP_INVALID, OP_ECALL } alu_op;
 typedef enum { MEM_LB, MEM_LBU, MEM_LH, MEM_LHU, MEM_LW, MEM_SB, MEM_SH, MEM_SW } mem_op;
 typedef enum { BR_EQ, BR_NEQ, BR_GE, BR_GEU, BR_LT, BR_LTU, BR_JUMP, BR_JUMPREG } br_op;
 typedef enum { WB_ALU, WB_PC, WB_LOAD } wb_sel;

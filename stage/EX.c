@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+
 #include "../include/cpu.h"
 extern struct riscv32_CPU_state cpu;
+extern void print_reg_state();
 
 EX2MEM EX(ID2EX decode_info) {
     EX2MEM ret;
@@ -21,6 +24,10 @@ EX2MEM EX(ID2EX decode_info) {
     switch(decode_info.alu_op) {
         case OP_INVALID: 
             panic("Invalid Insturction %8.8x at PC=%8.8x\n", decode_info.inst, decode_info.pc); break;
+        case OP_ECALL:
+            color_print("ECALL at PC = 0x%8.8x, Stop now.\n", decode_info.pc);
+            print_reg_state();
+            exit(0);
         case OP_ADD: alu_result = src1 + src2; break;
         // TODO
         default: alu_result = 0;

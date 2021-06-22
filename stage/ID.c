@@ -235,8 +235,12 @@ ID2EX ID(IF2ID inst) {
     ret.inst_raw_split.inst_raw = inst.inst;
     ret.pc = inst.pc;
     ret.inst = inst.inst;
+    ret.wb_en = 0;
     Log("OpCode is %8.8x\n",  ((ret.inst_raw_split.r.opcode6_2) << 2) | (ret.inst_raw_split.r.opcode1_0) );
     switch( ((ret.inst_raw_split.r.opcode6_2) << 2) | (ret.inst_raw_split.r.opcode1_0) ) { // funct7
+        case 0x73:        // ecall, treat as halt
+            ret.alu_op = OP_ECALL;
+            break;
         case B8(00110111):
         case B8(00010111):
             ret = ID_U(inst);

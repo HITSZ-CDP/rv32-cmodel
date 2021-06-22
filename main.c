@@ -20,16 +20,19 @@ void print_reg_state(){
     color_print("x[ 0] = 0x00000000\t");
     for(int i = 1; i < 32; i++) {
         if( (i % 4) == 0 ) printf("\n");
-        color_print("x[%2d] = %8.8x\t", i, cpu.gpr[i]);
+        color_print("x[%2d] = 0x%8.8x\t", i, cpu.gpr[i]);
     }
     printf("\n");
 }
 int main(void){
     memory[0] = 0x00300093;
+    memory[1] = 0x73;
     Log("CPU Started\n");
     int state = 0;
     cpu.pc = 0;
-    cpu_run_once();
+    while (1) {
+        cpu_run_once();
+    }
     print_reg_state();
     return 0;
 }
