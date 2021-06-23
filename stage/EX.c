@@ -1,13 +1,21 @@
+#include "../include/cpu.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-#include "../include/cpu.h"
-extern struct riscv32_CPU_state cpu;
+#define CHECK_A0
+extern riscv32_CPU_state cpu;
 extern void print_reg_state();
 #define ALU_CASE_ENTRY(op, calc) case op: alu_result = (calc); break
 #define BR_CASE_ENTRY(op, calc) case op: br_result = (calc); break
-
+int ecall_checker() { // check the testpoint
+    if(cpu.gpr[10] == 0) {
+        printf("Test Point Pass!\n");
+        return 0;
+    } else {
+        printf("Test Point Failed\n");
+        return -1;
+    }
+}
 EX2MEM EX(ID2EX decode_info) {
     EX2MEM ret;
     // Passthrough
@@ -30,8 +38,12 @@ EX2MEM EX(ID2EX decode_info) {
             panic("Invalid Insturction %8.8x at PC=%8.8x\n", decode_info.inst, decode_info.pc); break;
         case OP_ECALL:
             color_print("ECALL at PC = 0x%8.8x, Stop now.\n", decode_info.pc);
-            print_reg_state();
+            //print_reg_state();
+#ifdef CHECK_A0
+            exit(ecall_checker());
+#else
             exit(0);
+#endif
             ALU_CASE_ENTRY(OP_ADD, src1 + src2);
             ALU_CASE_ENTRY(OP_SLT, (int32_t)src1 < (int32_t)src2);
             ALU_CASE_ENTRY(OP_SLTU, src1 < src2);
