@@ -19,6 +19,7 @@ EX2MEM EX(ID2EX decode_info) {
     ret.dst = decode_info.dst;
     ret.target_pc = decode_info.next_pc; // evaluated in ID
     ret.store_val = decode_info.store_val;
+    ret.is_mem = decode_info.is_mem;
     ret.mem_op = decode_info.mem_op;
 
     uint32_t alu_result;
