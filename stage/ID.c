@@ -203,7 +203,7 @@ ID2EX ID_U(IF2ID inst) {
 
     ret.alu_op = OP_ADD;
 
-    if(ret.inst_raw_split.u.opcode6_2 == 6) {
+    if(ret.inst_raw_split.u.opcode6_2 == 0xd) {
         ret.src1.value = 0;
     } else {
         ret.src1.value = inst.pc;
