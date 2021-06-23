@@ -20,6 +20,7 @@ EX2MEM EX(ID2EX decode_info) {
     ret.store_val = decode_info.store_val;
     ret.is_mem = decode_info.is_mem;
     ret.mem_op = decode_info.mem_op;
+    Log("PC=%8.8x\n", ret.pc);
 
     uint32_t alu_result;
     uint32_t src1 = decode_info.src1.value;

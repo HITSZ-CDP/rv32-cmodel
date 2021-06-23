@@ -3,9 +3,7 @@ extern riscv32_CPU_state cpu;
 int WB(MEM2WB mem_info) {
     if(mem_info.branch_taken) {
         cpu.npc = mem_info.target_pc;
-    } else {
-        cpu.npc = mem_info.pc + 4;
-    }
+    } 
     uint32_t wb_val;
     if(mem_info.wb_en) {
         switch(mem_info.wb_sel) {
@@ -21,7 +19,7 @@ int WB(MEM2WB mem_info) {
     Log("========WB Stage=======\n");
     Log("PC = %8.8x\n", mem_info.pc);
     if(mem_info.wb_en) {
-        Log("WB value = %8.8x, WReg = %d\n", wb_val, mem_info.dst);
+        Log("WB value = %8.8x, WReg = %d, npc = 0x%8.8x\n", wb_val, mem_info.dst, cpu.npc);
     }
     if(mem_info.branch_taken) {
         Log("Branch Taken, target is %8.8x\n", mem_info.target_pc);

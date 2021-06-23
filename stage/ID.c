@@ -1,5 +1,6 @@
 #include "../include/cpu.h"
 #include "../include/bin.h"
+#include <stdint.h>
 #define pair(x, y) (((x) << 3) | (y))
 #define PAIR_ENTRY(x, y, OP) case pair(x,y): ret.alu_op = OP; break
 extern riscv32_CPU_state cpu;
@@ -48,6 +49,9 @@ ID2EX ID_I_LOAD(IF2ID inst) {
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
     ret.alu_op = OP_ADD;
+    ret.next_pc = inst.pc + 4;
+    ret.pc = inst.pc;
+    ret.inst = inst.inst;
     switch (ret.inst_raw_split.i.funct3) {
         case 0: ret.mem_op = MEM_LB; break;
         case 1: ret.mem_op = MEM_LH; break;
@@ -56,8 +60,6 @@ ID2EX ID_I_LOAD(IF2ID inst) {
         case 5: ret.mem_op = MEM_LHU; break;
         default: ret.mem_op = MEM_LW; break;
     }
-
-    ret.next_pc = inst.pc + 4;
 
     ret.is_jmp = 0;
     ret.is_branch = 0;
@@ -83,6 +85,8 @@ ID2EX ID_I(IF2ID inst) {
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
     ret.next_pc = inst.pc + 4;
+    ret.pc = inst.pc;
+    ret.inst = inst.inst;
 
     switch (ret.inst_raw_split.i.funct3) {
         case 0: ret.alu_op = OP_ADD; break;
@@ -119,6 +123,8 @@ ID2EX ID_S(IF2ID inst) {
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
     ret.next_pc = inst.pc + 4;
+    ret.pc = inst.pc;
+    ret.inst = inst.inst;
 
     ret.is_jmp = 0;
     ret.is_branch = 0;
@@ -151,7 +157,9 @@ ID2EX ID_B(IF2ID inst) {
     // BEQ/BNE/BLT/BLTU/BGE/BGEU
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
-    ret.next_pc = inst.pc + 4; // TODO: calculate next_pc here
+    ret.next_pc = inst.pc + 4;
+    ret.pc = inst.pc;
+    ret.inst = inst.inst;
 
     ret.is_jmp = 0;
     ret.is_branch = 1;
@@ -185,6 +193,8 @@ ID2EX ID_U(IF2ID inst) {
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
     ret.next_pc = inst.pc + 4;
+    ret.pc = inst.pc;
+    ret.inst = inst.inst;
 
     ret.is_jmp = 0;
     ret.is_branch = 0;
@@ -210,17 +220,20 @@ ID2EX ID_J(IF2ID inst) {
     // JAL/JALR
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
+    ret.next_pc = inst.pc + 4;
+    ret.pc = inst.pc;
+    ret.inst = inst.inst;
 
     ret.is_jmp = 1;
     ret.is_branch = 0;
     ret.is_mem = 0;
 
     ret.alu_op = OP_ADD;
-
+    uint32_t jimm = (ret.inst_raw_split.j.simm20 << 20) | (ret.inst_raw_split.j.imm19_12 << 19) | (ret.inst_raw_split.j.imm11 << 11) | (ret.inst_raw_split.j.imm10_1  << 10);
     if(ret.inst_raw_split.j.opcode6_2 == 13) {  // JAL 
-        ret.next_pc = inst.pc + 0; // TODO: Make the imm
-    } else {
-        ret.next_pc = cpu.gpr[ret.inst_raw_split.r.rs1];
+        ret.next_pc = inst.pc + jimm;
+    } else { // JALR
+        ret.next_pc = cpu.gpr[ret.inst_raw_split.r.rs1] + ret.inst_raw_split.i.simm11_0;
     }
 
     ret.dst = ret.inst_raw_split.j.rd;
@@ -233,6 +246,7 @@ ID2EX ID_J(IF2ID inst) {
 ID2EX ID(IF2ID inst) {
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
+    ret.next_pc = inst.pc + 4;
     ret.pc = inst.pc;
     ret.inst = inst.inst;
     ret.wb_en = 0;

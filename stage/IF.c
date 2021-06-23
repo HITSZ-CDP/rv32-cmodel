@@ -10,5 +10,6 @@ IF2ID IF(uint32_t npc) {
     ret.pc = npc;
     cpu.pc = npc;
     Log("Fetched instruction 0x%8.8x at PC=0x%8.8x", ret.inst, ret.pc);
+    cpu.npc = cpu.pc + 4;
     return ret;
 }
