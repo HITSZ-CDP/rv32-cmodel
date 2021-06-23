@@ -97,7 +97,7 @@ ID2EX ID_I(IF2ID inst) {
         case 5: if(ret.inst_raw_split.s.simm11_5 == 0) ret.alu_op = OP_SRL;
                 else ret.alu_op = OP_SRA;
                 break;
-        case 6: ret.alu_op = OP_AND; break;
+        case 7: ret.alu_op = OP_AND; break;
         default: ret.alu_op = OP_INVALID; break;
     }
 
@@ -251,8 +251,8 @@ ID2EX ID(IF2ID inst) {
     ret.pc = inst.pc;
     ret.inst = inst.inst;
     ret.wb_en = 0;
-    Log("OpCode is %8.8x",  ((ret.inst_raw_split.r.opcode6_2) << 2) | (ret.inst_raw_split.r.opcode1_0) );
-    switch( ((ret.inst_raw_split.r.opcode6_2) << 2) | (ret.inst_raw_split.r.opcode1_0) ) { // funct7
+    Log("OpCode is %8.8x",  ((ret.inst_raw_split.i.opcode6_2) << 2) | (ret.inst_raw_split.i.opcode1_0) );
+    switch( ((ret.inst_raw_split.i.opcode6_2) << 2) | (ret.inst_raw_split.i.opcode1_0) ) { // funct7
         case 0x73:        // ecall, treat as halt
             ret.alu_op = OP_ECALL;
             break;
