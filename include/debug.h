@@ -4,8 +4,12 @@
 #include <stdio.h>
 #include <assert.h>
 
-#define Log(format, ...) \
+#define Log_color(format, ...) \
     printf("\33[1;34m[%s,%d,%s] " format "\33[0m\n", \
+        __FILE__, __LINE__, __func__, ## __VA_ARGS__)
+
+#define Log(format, ...) \
+    printf("[%s,%d,%s] " format "\n", \
         __FILE__, __LINE__, __func__, ## __VA_ARGS__)
 
 #define color_print(format, ...) \

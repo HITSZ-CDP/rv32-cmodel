@@ -20,7 +20,7 @@ EX2MEM EX(ID2EX decode_info) {
     ret.store_val = decode_info.store_val;
     ret.is_mem = decode_info.is_mem;
     ret.mem_op = decode_info.mem_op;
-    Log("PC=%8.8x\n", ret.pc);
+    Log("PC=%8.8x", ret.pc);
 
     uint32_t alu_result;
     uint32_t src1 = decode_info.src1.value;
@@ -45,7 +45,7 @@ EX2MEM EX(ID2EX decode_info) {
         default: alu_result = 0;
     }
     ret.alu_out = alu_result;
-    Log("ALU Result = %8.8x\n", alu_result);
+    Log("ALU Result = %8.8x", alu_result);
 
     uint32_t br_result = 0;
     if(decode_info.is_branch) {
@@ -61,6 +61,7 @@ EX2MEM EX(ID2EX decode_info) {
     } else if (decode_info.is_jmp) {
         br_result = 1;
     }
+    Log("BR Result = %8.8x", br_result);
     ret.branch_taken = br_result;
 
     return ret;

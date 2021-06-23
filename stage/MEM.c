@@ -61,7 +61,7 @@ MEM2WB MEM(EX2MEM ex_info) {
     ret.target_pc = ex_info.target_pc;
     ret.inst = ex_info.inst;
     ret.pc = ex_info.pc;
-    Log("PC = %8.8x\n", ret.pc);
+    Log("PC = %8.8x", ret.pc);
     uint32_t load_result = 0;
     uint32_t is_store = 0;
     uint32_t mem_sz;

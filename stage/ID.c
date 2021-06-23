@@ -143,7 +143,7 @@ ID2EX ID_S(IF2ID inst) {
     ret.src1.value = cpu.gpr[ret.inst_raw_split.r.rs1];
 
     ret.src2.type = OP_TYPE_IMM;
-    ret.src2.value = ret.inst_raw_split.i.simm11_0;  // TODO: concat the imm here
+    ret.src2.value = (ret.inst_raw_split.s.simm11_5 << 5 ) | (ret.inst_raw_split.s.imm4_0 );
 
     ret.store_val = cpu.gpr[ret.inst_raw_split.r.rs2];
     
@@ -157,7 +157,8 @@ ID2EX ID_B(IF2ID inst) {
     // BEQ/BNE/BLT/BLTU/BGE/BGEU
     ID2EX ret;
     ret.inst_raw_split.inst_raw = inst.inst;
-    ret.next_pc = inst.pc + 4;
+    uint32_t imm = (ret.inst_raw_split.b.simm12 << 12) | (ret.inst_raw_split.b.imm11 << 11) | (ret.inst_raw_split.b.imm10_5 << 5) | (ret.inst_raw_split.b.imm4_1 << 1);
+    ret.next_pc = inst.pc + imm;
     ret.pc = inst.pc;
     ret.inst = inst.inst;
 
@@ -207,7 +208,7 @@ ID2EX ID_U(IF2ID inst) {
     } else {
         ret.src1.value = inst.pc;
     }
-    ret.src2.value = ret.inst_raw_split.u.imm31_12; // TODO: Shift the imm
+    ret.src2.value = (ret.inst_raw_split.u.imm31_12 << 12);
     
     ret.dst = ret.inst_raw_split.u.rd;
     ret.wb_sel = WB_ALU;
@@ -229,7 +230,7 @@ ID2EX ID_J(IF2ID inst) {
     ret.is_mem = 0;
 
     ret.alu_op = OP_ADD;
-    uint32_t jimm = (ret.inst_raw_split.j.simm20 << 20) | (ret.inst_raw_split.j.imm19_12 << 19) | (ret.inst_raw_split.j.imm11 << 11) | (ret.inst_raw_split.j.imm10_1  << 10);
+    uint32_t jimm = (ret.inst_raw_split.j.simm20 << 20) | (ret.inst_raw_split.j.imm19_12 << 12) | (ret.inst_raw_split.j.imm11 << 11) | (ret.inst_raw_split.j.imm10_1  << 1);
     if(ret.inst_raw_split.j.opcode6_2 == 13) {  // JAL 
         ret.next_pc = inst.pc + jimm;
     } else { // JALR
@@ -250,7 +251,7 @@ ID2EX ID(IF2ID inst) {
     ret.pc = inst.pc;
     ret.inst = inst.inst;
     ret.wb_en = 0;
-    Log("OpCode is %8.8x\n",  ((ret.inst_raw_split.r.opcode6_2) << 2) | (ret.inst_raw_split.r.opcode1_0) );
+    Log("OpCode is %8.8x",  ((ret.inst_raw_split.r.opcode6_2) << 2) | (ret.inst_raw_split.r.opcode1_0) );
     switch( ((ret.inst_raw_split.r.opcode6_2) << 2) | (ret.inst_raw_split.r.opcode1_0) ) { // funct7
         case 0x73:        // ecall, treat as halt
             ret.alu_op = OP_ECALL;
@@ -262,9 +263,11 @@ ID2EX ID(IF2ID inst) {
         case B8(01101111):
         case B8(01100111):
             ret = ID_J(inst);
+            Log("Jump target = %8.8x", ret.next_pc);
             break;
         case B8(01100011):
             ret = ID_B(inst);
+            Log("Branch target = %8.8x", ret.next_pc);
             break;
         case B8(00000011):
             ret = ID_I_LOAD(inst);
@@ -274,7 +277,6 @@ ID2EX ID(IF2ID inst) {
             break;
         case B8(00010011):
             ret = ID_I(inst);
-            Log("I Type\n");
             break;
         case B8(00110011):
             ret = ID_R(inst);
