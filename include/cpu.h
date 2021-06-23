@@ -1,6 +1,5 @@
 #ifndef __CPU__
 #define __CPU__
-#include <cstdint>
 #include <stdint.h>
 #include "debug.h"
 #define MEM_PADDR_BITS 10
@@ -8,6 +7,7 @@
 typedef struct {
   uint32_t gpr[32]; 
   uint32_t pc;
+  uint32_t npc;
 } riscv32_CPU_state;
 
 typedef struct {

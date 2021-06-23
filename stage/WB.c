@@ -2,9 +2,9 @@
 extern riscv32_CPU_state cpu;
 int WB(MEM2WB mem_info) {
     if(mem_info.branch_taken) {
-        cpu.pc = mem_info.target_pc;
+        cpu.npc = mem_info.target_pc;
     } else {
-        cpu.pc = mem_info.pc + 4;
+        cpu.npc = mem_info.pc + 4;
     }
     uint32_t wb_val;
     if(mem_info.wb_en) {
