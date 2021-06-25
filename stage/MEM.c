@@ -5,6 +5,7 @@ extern uint32_t memory[];
 #define MEM_LOAD_CASE_ENTRY(op, calc) case op: load_result = (calc); break
 #define MEM_STORE_CASE_ENTRY(op, calc) case op: store_val = (calc); is_store = 1; break
 uint32_t mem_load(uint32_t addr, uint32_t sz, uint32_t is_signed) {
+    Log("Load");
     Log("Mem addr = %8.8x", addr);
     uint32_t index = addr >> 2;
     uint32_t byte_offset = addr & 3;
@@ -40,19 +41,25 @@ void mem_store(uint32_t addr, uint32_t sz, uint32_t value) {
     uint32_t byte_offset = addr & 3;
     uint32_t half_offset = byte_offset >> 1;
     uint32_t bitmask = 0xffffffff;
+    Log("Store");
+    Log("Mem addr = %8.8x", addr);
+    Log("Mem Size = %8.8x", sz);
+    Log("register = %8.8x", value);
     switch (sz) {
         case 1: bitmask = 0xff << (byte_offset * 8); value = value & 0xff; break;
         case 2: bitmask = 0xffff << (half_offset * 16); value = value & 0xffff; break;
         default: bitmask = 0xffffffff; break;
     }
     uint32_t mem_line = memory[index];
+    Log("Mem Line = %8.8x", mem_line);
     uint32_t store_val = (mem_line & (~bitmask));  // clear the corresponding positions
     switch (sz) {
         case 1: store_val = (value << (byte_offset * 8)) | store_val; break;
         case 2: store_val = (value << (half_offset * 16)) | store_val; break;
-        default: store_val = store_val; break;
+        default: store_val = value; break;
     }
     memory[index] = store_val;
+    Log("new Mem Line = %8.8x", store_val);
 }
 MEM2WB MEM(EX2MEM ex_info) {
     MEM2WB ret;
