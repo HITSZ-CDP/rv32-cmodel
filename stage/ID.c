@@ -97,6 +97,7 @@ ID2EX ID_I(IF2ID inst) {
         case 5: if(ret.inst_raw_split.s.simm11_5 == 0) ret.alu_op = OP_SRL;
                 else ret.alu_op = OP_SRA;
                 break;
+        case 6: ret.alu_op = OP_OR; break;
         case 7: ret.alu_op = OP_AND; break;
         default: ret.alu_op = OP_INVALID; break;
     }
@@ -231,7 +232,7 @@ ID2EX ID_J(IF2ID inst) {
 
     ret.alu_op = OP_ADD;
     uint32_t jimm = (ret.inst_raw_split.j.simm20 << 20) | (ret.inst_raw_split.j.imm19_12 << 12) | (ret.inst_raw_split.j.imm11 << 11) | (ret.inst_raw_split.j.imm10_1  << 1);
-    if(ret.inst_raw_split.j.opcode6_2 == 13) {  // JAL 
+    if(ret.inst_raw_split.j.opcode6_2 == 0x1b) {  // JAL 
         ret.next_pc = inst.pc + jimm;
     } else { // JALR
         ret.next_pc = cpu.gpr[ret.inst_raw_split.r.rs1] + ret.inst_raw_split.i.simm11_0;

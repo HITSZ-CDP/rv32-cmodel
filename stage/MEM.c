@@ -5,17 +5,21 @@ extern uint32_t memory[];
 #define MEM_LOAD_CASE_ENTRY(op, calc) case op: load_result = (calc); break
 #define MEM_STORE_CASE_ENTRY(op, calc) case op: store_val = (calc); is_store = 1; break
 uint32_t mem_load(uint32_t addr, uint32_t sz, uint32_t is_signed) {
+    Log("Mem addr = %8.8x", addr);
     uint32_t index = addr >> 2;
     uint32_t byte_offset = addr & 3;
     uint32_t half_offset = byte_offset >> 1;
     uint32_t bitmask = 0xffffffff;
+    Log("Mem Size = %8.8x", sz);
     switch (sz) {
-        case 1: bitmask = 0xff << (byte_offset * 8); break;
-        case 2: bitmask = 0xffff << (half_offset * 16); break;
+        case 1: bitmask = 0xffu << (byte_offset * 8); break;
+        case 2: bitmask = 0xffffu << (half_offset * 16); break;
         default: bitmask = 0xffffffff; break;
     }
     uint32_t mem_line = memory[index];
+    Log("Mem Line = %8.8x", mem_line);
     uint32_t ret = (mem_line & bitmask);
+    Log("bitmask = %8.8x", bitmask);
     switch (sz) {
         case 1: ret = ret >> (byte_offset * 8); break;
         case 2: ret = ret >> (half_offset * 16); break;
@@ -68,9 +72,9 @@ MEM2WB MEM(EX2MEM ex_info) {
     uint32_t is_signed = 0;
     if(ex_info.is_mem) {
         switch (ex_info.mem_op) {
-            case MEM_SB: mem_sz = 1; case MEM_SH: mem_sz = 2; case MEM_SW: mem_sz = 4; is_store = 1; break;
-            case MEM_LB: mem_sz = 1; case MEM_LH: mem_sz = 2; case MEM_LW: mem_sz = 4; break;
-            case MEM_LBU: mem_sz = 1; case MEM_LHU: mem_sz = 2; is_signed = 1; break;
+            case MEM_SB: mem_sz = 1; is_store = 1;  break; case MEM_SH: mem_sz = 2; is_store = 1; break; case MEM_SW: mem_sz = 4; is_store = 1; break;
+            case MEM_LB: mem_sz = 1; is_signed = 1; break; case MEM_LH: mem_sz = 2;  is_signed = 1;break; case MEM_LW: mem_sz = 4;  is_signed = 1;break;
+            case MEM_LBU: mem_sz = 1; break; case MEM_LHU: mem_sz = 2; break; 
             default: is_store = 0; is_signed = 0;
         }
         if(is_store) {
